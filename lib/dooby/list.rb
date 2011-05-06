@@ -130,6 +130,13 @@ module Dooby
       current.flatten.last.todo.gsub(CURRENT_ITEM_TAG,'').strip unless current.blank?
     end
     
+    def current_id
+      current = tasks.select do |id, task|
+        task.todo.include? CURRENT_ITEM_TAG
+      end
+      current
+    end
+
     private
     def handle_tomorrow_tag(task)
       if task.todo.include? TOMORROW_TAG

@@ -70,6 +70,7 @@ Main {
     def run
       what_to_show = params[:what_to_show].values
       list = Dooby.current_list.find(what_to_show).tasks_by_tag(*Dooby::SPLITTABLE_TAGS)
+      list.reject!{|e| e.match(/:done/)} if what_to_show.empty?
       if list
         if what_to_show.empty?
           say 'Showing all items...'.blue_on_white.bold
@@ -146,7 +147,7 @@ Main {
       question = 'Item ID '.red.bold + '> '
       
       Dooby.cli_helper.keep_asking question, autocomp  do |task_id|
-         
+
         if Dooby.current_list.delete! task_id
           say task_id + ' deleted...'
           exit
@@ -217,6 +218,18 @@ Main {
         end                
       end
       
+    end
+  end
+
+  ########################## DONE #################################  
+  mode 'done' do
+    def run
+      current_item = Dooby.current_list.current_item
+      current_id = Dooby.current_list.current_id.keys.first
+      Dooby.current_list.delete! current_id
+      Dooby.current_list.add do |t|
+        t.todo = "#{current_item} :done"
+      end      
     end
   end
   
